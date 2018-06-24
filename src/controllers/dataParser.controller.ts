@@ -32,7 +32,6 @@ export class DataParserController {
     }
 
     private youtubeOptions = (channelId: string) => {
-        // https://www.googleapis.com/youtube/v3/search?key=AIzaSyBT1riFM8eP1BoixlHv12TcO60SX263jeQ&channelId=UCjOl2AUblVmg2rA_cRgZkFg&part=snippet,id&order=date&maxResults=20
         const options = {
             method: 'GET',
             uri: `https://www.googleapis.com/youtube/v3/search?key=${keys.GOOGLE_API}&channelId=${channelId}&part=snippet,id&order=date&maxResults=10`,

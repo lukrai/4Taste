@@ -2,7 +2,7 @@ import * as request from 'request-promise';
 const keys = require('../config/keys');
 
 export class DataParserController {
-    public async parseFacebookData(profilesString: String[]) {
+    public async parseFacebookData(profilesString: string[]) {
         let data: any = [];
         const options = {
             method: 'GET',
@@ -27,7 +27,50 @@ export class DataParserController {
                 data = feedData;
             }).catch(function (err) {
                 return [];
-            });    
+            });
         return data;
+    }
+
+    private youtubeOptions = (channelId: string) => {
+        // https://www.googleapis.com/youtube/v3/search?key=AIzaSyBT1riFM8eP1BoixlHv12TcO60SX263jeQ&channelId=UCjOl2AUblVmg2rA_cRgZkFg&part=snippet,id&order=date&maxResults=20
+        const options = {
+            method: 'GET',
+            uri: `https://www.googleapis.com/youtube/v3/search?key=${keys.GOOGLE_API}&channelId=${channelId}&part=snippet,id&order=date&maxResults=10`,
+            json: true
+        };
+        return options;
+    }
+
+    public async parseYoutubeData(idsString: string[]) {
+        let youtubeData: any[] = [];
+        let requests = [];
+
+        for (const channelId of idsString) {
+            requests.push(request(this.youtubeOptions(channelId)));
+        }
+
+        await Promise.all(requests)
+            .then(data => {
+                for (const channelData of data) {
+                    for (const element of channelData.items) {
+                        const obj = {
+                            id: element.id.videoId,
+                            kind: element.id.kind,
+                            created_time: element.snippet.publishedAt,
+                            title: element.snippet.title,
+                            description: element.snippet.description,
+                            channelId: element.snippet.channelId,
+                            channelTitle: element.snippet.channelTitle,
+                            thumbnails: element.snippet.thumbnails,
+                            source: 'youtube'
+                        }
+                        youtubeData.push(obj);
+                    }
+                }
+            }).catch(function (err) {
+                //return res.status(500).send("There was a problem parsing youtube feed.");
+                return [];
+            });
+        return youtubeData;
     }
 }

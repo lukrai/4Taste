@@ -72,4 +72,50 @@ export class DataParserController {
             });
         return youtubeData;
     }
+
+    private instagramOptions = (username: string) => {
+        const options = {
+            method: 'GET',
+            uri: `https://graph.facebook.com/v3.0/17841408080611853?fields=business_discovery.username(${username}){name,profile_picture_url,media{caption,media_url,media_type,timestamp,like_count,comments_count,id}}`,
+            
+            qs: {
+                access_token: keys.INSTAGRAM_ACCESS_KEY,
+            },
+            json: true
+        };
+        return options;
+    }
+
+    public async parseInstagramData(usernamesString: string[]) {
+        let instagramData: any[] = [];
+        let requests = [];
+
+        for (const userId of usernamesString) {
+            requests.push(request(this.instagramOptions(userId)));
+        }
+
+        await Promise.all(requests)
+            .then(data => {
+                for (const profileData of data) {
+                    for (const element of profileData.business_discovery.media.data) {
+                        const obj = {
+                            id: element.id,
+                            name: profileData.business_discovery.name,
+                            profile_picture_url: profileData.business_discovery.profile_picture_url,
+                            created_time: element.timestamp,
+                            type: element.media_type,
+                            media_url: element.media_url,
+                            caption: element.caption,
+                            like_count: element.like_count,
+                            comments_count: element.comments_count,
+                            source: 'instagram',
+                        }
+                        instagramData.push(obj);
+                    }
+                }
+            }).catch(function (err) {
+                return [];
+            });
+        return instagramData;
+    }
 }

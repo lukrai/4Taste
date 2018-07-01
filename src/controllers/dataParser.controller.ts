@@ -1,5 +1,6 @@
 import * as request from 'request-promise';
 const keys = require('../config/keys');
+const RSSParser = require('rss-parser');
 
 export class DataParserController {
     public async parseFacebookData(profilesString: string[]) {
@@ -77,7 +78,7 @@ export class DataParserController {
         const options = {
             method: 'GET',
             uri: `https://graph.facebook.com/v3.0/17841408080611853?fields=business_discovery.username(${username}){name,profile_picture_url,media{caption,media_url,media_type,timestamp,like_count,comments_count,id}}`,
-            
+
             qs: {
                 access_token: keys.INSTAGRAM_ACCESS_KEY,
             },
@@ -90,8 +91,8 @@ export class DataParserController {
         let instagramData: any[] = [];
         let requests = [];
 
-        for (const userId of usernamesString) {
-            requests.push(request(this.instagramOptions(userId)));
+        for (const username of usernamesString) {
+            requests.push(request(this.instagramOptions(username)));
         }
 
         await Promise.all(requests)
@@ -117,5 +118,36 @@ export class DataParserController {
                 return [];
             });
         return instagramData;
+    }
+
+    public async parsePinterestData(usernamesString: string[]) {
+        let pinterestData: any[] = [];
+        let requests = [];
+        let parser = new RSSParser();
+
+        for (const username of usernamesString) {
+            requests.push(parser.parseURL(`https://www.pinterest.com/${username}/feed.rss/)`));
+        }
+
+        await Promise.all(requests)
+            .then(async data => {
+                for (const feedData of data) {
+                    for (const item of feedData.items) {
+                        const obj = {
+                            id: item.guid,
+                            title: item.title,
+                            created_time: item.isoDate,
+                            pubDate: item.pubDate,
+                            content: item.content,
+                            contentSnippet: item.contentSnippet,
+                            image_url: item.content.match(/<img src=\"([^"]*)/)[1].replace(/236x/, "1200x")
+                        }
+                        pinterestData.push(obj);
+                    }
+                }
+            }).catch(function (err) {
+                return [];
+            });
+        return pinterestData;
     }
 }

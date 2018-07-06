@@ -16,6 +16,7 @@ class App {
         this.mongoSetup();
         this.middleware();
         this.routes();
+        this.errorHandler();
     }
 
     private mongoSetup(): void {
@@ -38,10 +39,16 @@ class App {
                 message: 'Hello World!'
             });
         });
+        router.get('/favicon.ico', (req, res) => res.status(204));
         this.express.use('/', router);
         this.express.use('/api/feed', FeedRouter);
     }
 
+    private errorHandler(): void {
+        this.express.use(function (err: Error, req: express.Request, res: express.Response, next: express.NextFunction) {
+            return res.status(500).send({ message: err.message });
+        });
+    }
 }
 
 export default new App().express;

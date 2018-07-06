@@ -130,7 +130,7 @@ export class DataParserController {
         }
 
         await Promise.all(requests)
-            .then(async data => {
+            .then(data => {
                 for (const feedData of data) {
                     for (const item of feedData.items) {
                         const obj = {

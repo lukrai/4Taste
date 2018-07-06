@@ -1,5 +1,4 @@
-import * as mongoose from 'mongoose';
-import { FeedSchema, Feed } from '../models/Feed.model';
+import { Feed } from '../models/Feed.model';
 import { Request, Response, NextFunction } from 'express';
 import { DataParserController } from './dataParser.controller'
 
@@ -43,7 +42,7 @@ export class FeedController {
     }
 
     public updateFeed(req: Request, res: Response, next: NextFunction) {
-        Feed.findOneAndUpdate({_id: req.params.feedId}, req.body).exec((err, feed) => {
+        Feed.findOneAndUpdate({_id: req.params.feedId}, req.body).setOptions({ runValidators: true }).exec((err, feed) => {
             if (err) {
                 return next(err);
             }

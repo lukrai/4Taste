@@ -17,10 +17,8 @@ export interface IFeedDocument extends IFeed, Document {
 }
 
 export var FeedSchema: Schema = new Schema({
-    name: String,
+    name: {type: String, required: true},
     sources: [],
-    date_created: Date,
-    date_updated: Date,
-});
+}, {timestamps: true});
 
 export const Feed: Model<IFeedDocument> = model<IFeedDocument>("Feed", FeedSchema);

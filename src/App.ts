@@ -6,6 +6,7 @@ import * as mongoose from 'mongoose';
 const keys = require('./config/keys');
 
 import FeedRouter from './routes/feed.router';
+import AuthRouter from './routes/auth.router';
 // Creates and configures an ExpressJS web server.
 class App {
     public express: express.Application;
@@ -27,6 +28,7 @@ class App {
         this.express.use(logger('dev'));
         this.express.use(bodyParser.json());
         this.express.use(bodyParser.urlencoded({ extended: false }));
+        require('./passport');
     }
 
     // Configure API endpoints.
@@ -42,6 +44,7 @@ class App {
         router.get('/favicon.ico', (req, res) => res.status(204));
         this.express.use('/', router);
         this.express.use('/api/feed', FeedRouter);
+        this.express.use('/auth', AuthRouter);
     }
 
     private errorHandler(): void {

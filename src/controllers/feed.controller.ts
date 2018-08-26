@@ -12,7 +12,7 @@ export class FeedController {
             if (err) {
                 return next(err);
             }
-            return res.json({message: "Successfully added!", id: feed.id} );
+            return res.json({ message: "Successfully added!", id: feed.id });
         });
     }
 
@@ -29,39 +29,39 @@ export class FeedController {
         // console.log(await dataParserController.parseFacebookData(['carthrottle']));
         // console.log(await dataParserController.parseInstagramData(['love_food', 'rkoi']));
         // const s = await dataParserController.parsePinterestData(["travelhyper", "thriftytrvlmama"]);
-        
-        Feed.findOne({_id: req.params.feedId}).lean().exec((err, feed) => {
+
+        Feed.findOne({ _id: req.params.feedId }).lean().exec((err, feed) => {
             if (err) {
                 return next(err);
             }
             if (!feed) {
-                return res.status(404).json({message: "Feed not found"});
+                return res.status(404).json({ error: { message: "Feed not found" } });
             }
             return res.json(feed);
         });
     }
 
     public updateFeed(req: Request, res: Response, next: NextFunction) {
-        Feed.findOneAndUpdate({_id: req.params.feedId}, req.body).setOptions({ runValidators: true }).exec((err, feed) => {
+        Feed.findOneAndUpdate({ _id: req.params.feedId }, req.body).setOptions({ runValidators: true }).exec((err, feed) => {
             if (err) {
                 return next(err);
             }
             if (!feed) {
-                return res.status(404).json({message: "Feed not found"});
+                return res.status(404).json({ error: { message: "Feed not found" } });
             }
-            return res.json({message: "Successfully updated!"});
+            return res.json({ message: "Successfully updated!" });
         });
     }
 
     public deleteFeed(req: Request, res: Response, next: NextFunction) {
-        Feed.remove({_id: req.params.feedId}).exec((err, feed) => {
+        Feed.remove({ _id: req.params.feedId }).exec((err, feed) => {
             if (err) {
                 return next(err);
             }
             if (!feed) {
-                return res.status(404).json({message: "Feed not found"});
+                return res.status(404).json({ error: { message: "Feed not found" } });
             }
-            return res.json({message: "Successfully deleted!"});
+            return res.json({ message: "Successfully deleted!" });
         });
     }
 }

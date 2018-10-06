@@ -2,9 +2,9 @@ import { Feed } from '../models/Feed.model';
 import { Request, Response, NextFunction } from 'express';
 import { DataParserController } from './dataParser.controller'
 
-const dataParserController: DataParserController = new DataParserController();
-
 export class FeedController {
+    private dataParserController: DataParserController = new DataParserController();
+
     public addNewFeed(req: Request, res: Response, next: NextFunction) {
         let newFeed = new Feed(req.body);
 
@@ -49,7 +49,7 @@ export class FeedController {
             if (!feed) {
                 return res.status(404).json({ error: { message: "Feed not found" } });
             }
-            return res.json({ message: "Successfully updated!" });
+            return res.json({ message: "Feed successfully updated" });
         });
     }
 
@@ -61,7 +61,7 @@ export class FeedController {
             if (!feed) {
                 return res.status(404).json({ error: { message: "Feed not found" } });
             }
-            return res.json({ message: "Successfully deleted!" });
+            return res.json({ message: "Feed successfully deleted" });
         });
     }
 }

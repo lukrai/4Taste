@@ -1,18 +1,8 @@
-import * as jwt from 'jsonwebtoken';
-const keys = require('./../config/keys');
 import { User, IUser } from '../models/User.model';
 import { Request, Response, NextFunction } from 'express';
+import {signToken} from "../services/auth.service";
 
 export class UserController {
-    private signToken(user: IUser) {
-        return jwt.sign({
-            iss: "4Taste",
-            sub: user.id,
-            iat: new Date().getTime(),
-            exp: new Date().setDate(new Date().getDate() + 1),
-        }, keys.JWT_SECRET);
-    }
-
     public addNewUser = async (req: Request, res: Response, next: NextFunction) => {
         const { email, password } = req.body;
         const foundUser = await User.findOne({"local.email": email});
@@ -26,17 +16,13 @@ export class UserController {
                 return next(err);
             }
 
-            const token = this.signToken(user);
+            const token = signToken(req);
             return res.json({ token, id: user.id, });
         });
     }
 
     public login = async (req: Request, res: Response, next: NextFunction) => {
-        const token = this.signToken(<IUser>req.user);
-        return res.json({ token });
-    }
-    public loginGoogle = async (req: Request, res: Response, next: NextFunction) => {
-        const token = this.signToken(<IUser>req.user);
+        const token = signToken(req);
         return res.json({ token });
     }
 }

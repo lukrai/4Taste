@@ -4,10 +4,14 @@ const RSSParser = require('rss-parser');
 
 export class DataParserController {
     public async parseFacebookData(profilesString: string[]) {
+        if (!profilesString || profilesString.length <= 0) {
+            return [];
+        }
+
         let data: any = [];
         const options = {
             method: 'GET',
-            uri: `https://graph.facebook.com/v2.11/?ids=${profilesString.toString()}`,
+            uri: `https://graph.facebook.com/v3.0/?ids=${profilesString.toString()}`,
             qs: {
                 access_token: keys.FB_ACCESS_KEY,
                 fields: 'feed.limit(40){description,message,created_time,from{name, picture}, picture.height(720), properties, source, attachments, likes.summary(1).limit(0), link}'//'feed.limit(3).order(reverse_chronological)'
@@ -27,6 +31,7 @@ export class DataParserController {
                 }
                 data = feedData;
             }).catch(function (err) {
+                console.log(err);
                 return [];
             });
         return data;
@@ -42,6 +47,10 @@ export class DataParserController {
     }
 
     public async parseYoutubeData(idsString: string[]) {
+        if (!idsString || idsString.length <= 0) {
+            return [];
+        }
+
         let youtubeData: any[] = [];
         let requests = [];
 
@@ -88,6 +97,10 @@ export class DataParserController {
     }
 
     public async parseInstagramData(usernamesString: string[]) {
+        if (!usernamesString || usernamesString.length <= 0) {
+            return [];
+        }
+
         let instagramData: any[] = [];
         let requests = [];
 
@@ -121,6 +134,10 @@ export class DataParserController {
     }
 
     public async parsePinterestData(usernamesString: string[]) {
+        if (!usernamesString || usernamesString.length <= 0) {
+            return [];
+        }
+
         let pinterestData: any[] = [];
         let requests = [];
         let parser = new RSSParser();

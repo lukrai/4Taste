@@ -3,10 +3,12 @@ import * as express from 'express';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
 import * as mongoose from 'mongoose';
+import { initDataFetch } from "./services/dataFetch.service";
 const keys = require('./config/keys');
 
 import FeedRouter from './routes/feed.router';
 import AuthRouter from './routes/auth.router';
+
 // Creates and configures an ExpressJS web server.
 class App {
     public express: express.Application;
@@ -18,6 +20,7 @@ class App {
         this.middleware();
         this.routes();
         this.errorHandler();
+        initDataFetch();
     }
 
     private mongoSetup(): void {
